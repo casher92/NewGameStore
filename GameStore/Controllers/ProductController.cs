@@ -8,64 +8,121 @@ using System.Web;
 using System.Web.Mvc;
 using GameStore.DAL;
 using GameStore.Models;
-using System.Data.Entity.Infrastructure;
+
 namespace GameStore.Controllers
 {
-    [Authorize]
     public class ProductController : Controller
     {
         private StoreContext db = new StoreContext();
 
         // GET: Product
-        public ActionResult Index(string sortOrder, string searchString)
+        public ActionResult Index()
         {
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name-desc" : "";
-            ViewBag.DateSortParm = sortOrder == "ProductID" ? "productID-desc" : "";
-
-            var products = from c in db.Products select c;
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(c => c.ProductName.Contains(searchString));
-            }
-
-            switch (sortOrder)
-            {
-                case "name-desc":
-                    products = products.OrderByDescending(c => c.ProductName);
-                    break;
-                case "Date":
-                    products = products.OrderBy(c => c.ProductID);
-                    break;
-                case "productID-desc":
-                    products = products.OrderByDescending(c => c.ProductID);
-                    break;
-                default:
-                    products = products.OrderBy(c => c.ProductName);
-                    break;
-            }
-
-            return View(products.ToList());
+            return View(db.Products.ToList());
         }
 
-        public ActionResult Create([Bind(Include = "ProductName,ProductID,Customer")] Product product)
+        // GET: Product/Details/5
+        public ActionResult Details(int? id)
         {
-            try
+            if (id == null)
             {
-
-
-                if (ModelState.IsValid)
-                {
-                    db.Products.Add(product);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            catch
+            Product product = db.Products.Find(id);
+            if (product == null)
             {
-                ModelState.AddModelError("", "Unable to save changes!");
+                return HttpNotFound();
             }
             return View(product);
+        }
+
+        // GET: Product/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Product/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include = "ProductID,ProductName,UPC,Price,Inventory")] Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Products.Add(product);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(product);
+        }
+
+        // GET: Product/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Product product = db.Products.Find(id);
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+            return View(product);
+        }
+
+        // POST: Product/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "ProductID,ProductName,UPC,Price,Inventory")] Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(product).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(product);
+        }
+
+        // GET: Product/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Product product = db.Products.Find(id);
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+            return View(product);
+        }
+
+        // POST: Product/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Product product = db.Products.Find(id);
+            db.Products.Remove(product);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
