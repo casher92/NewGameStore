@@ -11,6 +11,7 @@ using GameStore.Models;
 using System.Data.Entity.Infrastructure;
 namespace GameStore.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private StoreContext db = new StoreContext();
