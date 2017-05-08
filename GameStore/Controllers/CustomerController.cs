@@ -8,17 +8,44 @@ using System.Web;
 using System.Web.Mvc;
 using GameStore.DAL;
 using GameStore.Models;
+using System.Data.Entity.Infrastructure;
 
 namespace GameStore.Controllers
 {
+    [Authorize]
     public class CustomerController : Controller
     {
         private StoreContext db = new StoreContext();
 
         // GET: Customer
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder, string searchString)
         {
-            return View(db.Customers.ToList());
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name-desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date-desc" : "";
+            var customers = from c in db.Customers select c;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                customers = customers.Where(c => c.LastName.Contains(searchString) || c.FirstName.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name-desc":
+                    customers = customers.OrderByDescending(c => c.LastName);
+                    break;
+                case "Date":
+                    customers = customers.OrderBy(c => c.PurchaseDate);
+                    break;
+                case "date-desc":
+                    customers = customers.OrderByDescending(c => c.PurchaseDate);
+                    break;
+                default:
+                    customers = customers.OrderBy(c => c.LastName);
+                    break;
+            }
+
+            return View(customers.ToList());
         }
 
         // GET: Customer/Details/5
@@ -110,15 +137,15 @@ namespace GameStore.Controllers
         }
 
         // GET: Customer/Delete/5
-        public ActionResult Delete(int? id, bool?, saveChangesError=false)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            if (saveChangesError.GetValueorDefault())
+            if (saveChangesError.GetValueOrDefault())
             {
-                ViewBag.ErrorMessage = "Delete failed!"
+                ViewBag.ErrorMessage = "Delete has failed!";
             }
             Customer customer = db.Customers.Find(id);
             if (customer == null)
