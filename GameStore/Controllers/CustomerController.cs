@@ -34,14 +34,12 @@ namespace GameStore.Controllers
                 case "name-desc":
                     customers = customers.OrderByDescending(c => c.LastName);
                     break;
-                case "Date":
-                    customers = customers.OrderBy(c => c.PurchaseDate);
-                    break;
                 case "date-desc":
                     customers = customers.OrderByDescending(c => c.PurchaseDate);
                     break;
                 default:
                     customers = customers.OrderBy(c => c.LastName);
+                    customers = customers.OrderBy(c => c.PurchaseDate);
                     break;
             }
 
