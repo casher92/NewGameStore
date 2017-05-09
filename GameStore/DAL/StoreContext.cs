@@ -22,7 +22,7 @@ namespace GameStore.DAL
 
         public DbSet<Purchase> Purchases { get; set; }
 
-        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employee { get; set; }
 
 
 

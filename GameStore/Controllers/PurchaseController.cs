@@ -8,9 +8,12 @@ using System.Web;
 using System.Web.Mvc;
 using GameStore.DAL;
 using GameStore.Models;
+using System.Data.Entity.Infrastructure;
+
 
 namespace GameStore.Controllers
 {
+    [Authorize]
     public class PurchaseController : Controller
     {
         private StoreContext db = new StoreContext();
@@ -41,7 +44,7 @@ namespace GameStore.Controllers
         public ActionResult Create()
         {
             ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "FirstName");
-            ViewBag.EmployeeID = new SelectList(db.Employees, "EmployeeID", "FirstName");
+            ViewBag.EmployeeID = new SelectList(db.Employee, "EmployeeID", "FirstName");
             ViewBag.ProductID = new SelectList(db.Products, "ProductID", "ProductName");
             return View();
         }
@@ -61,7 +64,7 @@ namespace GameStore.Controllers
             }
 
             ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "FirstName", purchase.CustomerID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "EmployeeID", "FirstName", purchase.EmployeeID);
+            ViewBag.EmployeeID = new SelectList(db.Employee, "EmployeeID", "FirstName", purchase.EmployeeID);
             ViewBag.ProductID = new SelectList(db.Products, "ProductID", "ProductName", purchase.ProductID);
             return View(purchase);
         }
@@ -79,7 +82,7 @@ namespace GameStore.Controllers
                 return HttpNotFound();
             }
             ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "FirstName", purchase.CustomerID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "EmployeeID", "FirstName", purchase.EmployeeID);
+            ViewBag.EmployeeID = new SelectList(db.Employee, "EmployeeID", "FirstName", purchase.EmployeeID);
             ViewBag.ProductID = new SelectList(db.Products, "ProductID", "ProductName", purchase.ProductID);
             return View(purchase);
         }
@@ -98,7 +101,7 @@ namespace GameStore.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "FirstName", purchase.CustomerID);
-            ViewBag.EmployeeID = new SelectList(db.Employees, "EmployeeID", "FirstName", purchase.EmployeeID);
+            ViewBag.EmployeeID = new SelectList(db.Employee, "EmployeeID", "FirstName", purchase.EmployeeID);
             ViewBag.ProductID = new SelectList(db.Products, "ProductID", "ProductName", purchase.ProductID);
             return View(purchase);
         }

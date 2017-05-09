@@ -8,6 +8,7 @@ using GameStore.ViewModels;
 
 namespace GameStore.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private StoreContext db = new StoreContext();
@@ -26,13 +27,6 @@ namespace GameStore.Controllers
                           PurchaseCount = dateGroup.Count()
                       };
             return View(data.ToList());
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Our Location and Email";
-
-            return View();
         }
 
         protected override void Dispose(bool disposing)
